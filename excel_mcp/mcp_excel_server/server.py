@@ -7,12 +7,10 @@ from typing import Optional, Dict, List, Union, Tuple, Any
 from dataclasses import dataclass
 import base64
 from datetime import datetime
-from mcp.server.fastmcp import FastMCP, Context, Image
+from fastmcp import FastMCP, Image
 
 # Create the MCP server
-mcp = FastMCP("Excel Data Manager",    host=os.environ.get("FASTMCP_HOST", "0.0.0.0"),
-    port=int(os.environ.get("FASTMCP_PORT", "8017")),
-    instructions="Excel MCP Server for manipulating Excel files")
+mcp = FastMCP("Excel Data Manager")
 
 # Helper functions
 def _read_excel_file(file_path: str) -> Tuple[pd.DataFrame, str]:
@@ -686,7 +684,7 @@ inconsistent formatting, and other data quality problems?
 """
 
 def main():
-    mcp.run(transport="streamable-http")
+    mcp.run(transport="http", host=os.environ.get("HOST", "0.0.0.0"),port=int(os.environ.get("PORT", "8017")))
 
 # Main function to run server
 if __name__ == "__main__":

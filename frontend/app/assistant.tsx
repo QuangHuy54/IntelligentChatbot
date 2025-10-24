@@ -27,6 +27,12 @@ import {
   CompleteAttachment,
 } from "@assistant-ui/react";
 
+const API_CONFIG = {
+  baseUrl: process.env.BACKEND_URL || "http://localhost:8000",
+  chatEndpoint: "/api/chat",
+  uploadEndpoint: "/upload",
+} as const;
+
 class CustomAttachmentAdapter implements AttachmentAdapter {
   accept = "image/*,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,.xlsx,.xls,text/csv,application/csv,.csv";
 
@@ -51,7 +57,7 @@ class CustomAttachmentAdapter implements AttachmentAdapter {
     const formData = new FormData();
     formData.append("file", attachment.file);
 
-    const res = await fetch("http://localhost:8000/upload", {
+    const res = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.uploadEndpoint}`, {
       method: "POST",
       body: formData,
     });
@@ -104,10 +110,7 @@ interface SSEImage {
 type SSEEvent = SSETextDelta | SSEFinish | SSEError|SSEImage;
 
 // Configuration
-const API_CONFIG = {
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
-  chatEndpoint: "/api/chat",
-} as const;
+
 
 /**
  * SSE Chat Model Adapter using @microsoft/fetch-event-source

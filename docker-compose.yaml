@@ -1,0 +1,45 @@
+services:
+  excelmcp:
+    build:
+      context: ./excel_mcp               
+      dockerfile: Dockerfile
+    container_name: excelmcp
+    networks:
+      - appnet
+    command: ["uv", "run", "mcp_excel_server/server.py"]
+
+  backend:
+    build:
+      context: ./backend           
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "8000:8000"
+    environment:
+      - MCP_SERVER_URL=http://excelmcp:8017/mcp
+      - CONTAINER_NAME=backend
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - excelmcp
+    networks:
+      - appnet
+    command: ["uv", "run", "main.py"]
+
+  frontend:
+    build:
+      context: ./frontend          
+      dockerfile: Dockerfile
+    container_name: frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      - BACKEND_URL=http://backend:8000
+    networks:
+      - appnet
+    command: ["pnpm", "start"]
+
+networks:
+  appnet:
+    driver: bridge

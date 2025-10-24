@@ -27,12 +27,8 @@ async def upload_file(file: UploadFile = File(...)):
 
     # Optional: handle by file type
     if ext in ["xlsx", "xls", "csv"]:
-        try:
-            df = pd.read_excel(path) if ext != "csv" else pd.read_csv(path)
-            preview = df.head(3).to_dict(orient="records")
-        except Exception:
-            preview = []
-        return {"type": "excel", "url": file_url, "preview": preview}
+        df = pd.read_excel(path) if ext != "csv" else pd.read_csv(path)
+        return {"type": "excel", "url": file_url}
 
     elif ext in ["png", "jpg", "jpeg", "gif", "webp"]:
         img = Image.open(path)

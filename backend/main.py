@@ -1,14 +1,3 @@
-"""
-main.py
-
-Main application entry point.
-- Creates the FastAPI app instance.
-- Configures middleware (CORS).
-- Mounts static file directories.
-- Includes API routers.
-- Defines the main run block.
-"""
-
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

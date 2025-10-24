@@ -16,6 +16,7 @@ async def stream_langchain_response(messages: List[BaseMessage]):
     """Stream LangChain responses in SSE format"""
     try:
         # Stream the response
+        print(f"Get MCP Server in {MCP_SERVER_URL}")
         client = MultiServerMCPClient(
             {
                 "excel": {
@@ -26,7 +27,7 @@ async def stream_langchain_response(messages: List[BaseMessage]):
         )        
         # Get tools
         tools = await client.get_tools()
-
+        print("Get tools completed")
         @wrap_tool_call
         async def handle_tool_errors(request, handler):
             """Handle tool execution errors with custom messages."""
@@ -42,6 +43,7 @@ async def stream_langchain_response(messages: List[BaseMessage]):
         agent = create_agent(llm, tools, middleware=[handle_tool_errors])
         
         async for chunk, metadata in agent.astream({"messages": [SystemMessage(SYSTEM_PROMPT)]+messages}, stream_mode="messages"):
+            print("Step: ",str(chunk)[:100])
             if hasattr(chunk,"artifact") and chunk.artifact!=None:
                 save_image_from_artifact(
                     chunk.artifact[0],

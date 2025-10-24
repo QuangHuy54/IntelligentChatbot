@@ -10,7 +10,7 @@ from PIL import Image
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_core.messages.base import BaseMessage
 
-from config import UPLOAD_DIR, OUTPUT_DIR # Import directory configs
+from config import UPLOAD_DIR, OUTPUT_DIR, CONTAINER_NAME
 
 def convert_to_langchain_messages(messages: List[Dict[str, Any]]) -> List[BaseMessage]:
     """
@@ -46,11 +46,10 @@ def convert_to_langchain_messages(messages: List[Dict[str, Any]]) -> List[BaseMe
             if not attachment_content_list:
                 continue
 
-            # --- NEW LOGIC FOR FILES (like your CSV) ---
             if attachment_type == "file":
                 file_part = attachment_content_list[0]
                 file_url = file_part.get("text") if file_part.get("type") == "text" else None
-
+                file_url=file_url.replace("localhost",CONTAINER_NAME) #Convert to docker path
                 if file_url:
                     # Just pass the file's metadata as text.
                     # The LLM can then use this URL in a tool call.
@@ -66,39 +65,35 @@ def convert_to_langchain_messages(messages: List[Dict[str, Any]]) -> List[BaseMe
                 for att_part in attachment_content_list:
                     if att_part.get("type") == "image":
                         image_data = att_part.get("image", "") # URL or base64
-
-                        if image_data.startswith("http"):
-                            # Fetch local image URLs
-                            if image_data.startswith("http://localhost") or image_data.startswith("http://127.0.0.1"):
-                                try:
-                                    path_from_url = urlparse(image_data).path
-                                
-                                # 2. Create the full local file path
-                                # os.path.join('./public', 'uploads/image.png')
-                                # The lstrip('/') removes the leading slash from the path
-                                    local_file_path = os.path.join(".", path_from_url.lstrip('/'))
-                                    if os.path.exists(local_file_path):
-                                    # 3. Read the file as bytes
-                                        with open(local_file_path, 'rb') as f:
-                                            image_bytes = f.read()
-                                        
-                                        # 4. Get MIME type and encode
-                                        mime_type, _ = mimetypes.guess_type(local_file_path)
-                                        if not mime_type:
-                                            mime_type = 'image/jpeg' # Fallback
-                                        
-                                        b64_data = base64.b64encode(image_bytes).decode('utf-8')
-                                        data_uri = f"data:{mime_type};base64,{b64_data}"
-                                        message_content.append({"type": "image", "source_type": "base64", "data": b64_data,"mime_type":mime_type})
-                                    else:
-                                        print(f"File not found at local path: {local_file_path}")
-                                        message_content.append({"type": "text", "text": f"[Failed to load local image: {attachment_name}]"})
-                                except Exception as e:
-                                    print(f"Error fetching local image {image_data}: {e}")
+                        if image_data.startswith("http"): #Local or dockerfile
+                            try:
+                                path_from_url = urlparse(image_data).path
+                            # 2. Create the full local file path
+                            # os.path.join('./public', 'uploads/image.png')
+                            # The lstrip('/') removes the leading slash from the path
+                                local_file_path = os.path.join(".", path_from_url.lstrip('/'))
+                                if os.path.exists(local_file_path):
+                                # 3. Read the file as bytes
+                                    with open(local_file_path, 'rb') as f:
+                                        image_bytes = f.read()
+                                    
+                                    # 4. Get MIME type and encode
+                                    mime_type, _ = mimetypes.guess_type(local_file_path)
+                                    if not mime_type:
+                                        mime_type = 'image/jpeg' # Fallback
+                                    
+                                    b64_data = base64.b64encode(image_bytes).decode('utf-8')
+                                    data_uri = f"data:{mime_type};base64,{b64_data}"
+                                    message_content.append({"type": "image", "source_type": "base64", "data": b64_data,"mime_type":mime_type})
+                                else:
+                                    print(f"File not found at local path: {local_file_path}")
                                     message_content.append({"type": "text", "text": f"[Failed to load local image: {attachment_name}]"})
-                            else:
-                                # Public image URL, model can access this
-                                message_content.append({"type": "image_url", "image_url": {"url": image_data}})
+                            except Exception as e:
+                                print(f"Error fetching local image {image_data}: {e}")
+                                message_content.append({"type": "text", "text": f"[Failed to load local image: {attachment_name}]"})
+                        elif image_data.startswith("https"):
+                            # Public image URL, model can access this
+                            message_content.append({"type": "image_url", "image_url": {"url": image_data}})
                         elif image_data:
                             # Data is already base64
                             mime_type = "image/jpeg" # Add your logic to guess mime type

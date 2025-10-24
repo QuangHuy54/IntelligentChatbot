@@ -27,6 +27,6 @@ ADD . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked
 
-EXPOSE 8017
+EXPOSE 8000
 
-CMD ["uv", "run", "mcp_excel_server/server.py"]
+CMD ["uv", "run", "main.py"]
