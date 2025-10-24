@@ -2,89 +2,125 @@
 
 This is a multi-component chatbot application that supports advanced features, including multimodal chat with images and data analysis by querying CSV files via a dedicated MCP server.
 
-Demo: https://youtu.be/uV_kBuPEWGk
+Demo: [https://youtu.be/uV_kBuPEWGk](https://youtu.be/uV_kBuPEWGk)
 
 ## ✨ Features
 
 * **Image Chat:** Engage in conversations about images.
 * **CSV Data Chat:** Ask questions and analyze data from CSV files.
-* **Modular Architecture:** The project is separated into a `frontend`, `backend`, and a dedicated `excel_mcp` server for data processing.
+* **Modular Architecture:** The system is divided into a `frontend`, a `backend`, and a dedicated `excel_mcp` server for structured data processing.
 
 ## 🏗️ System Overview
+
 <img width="1386" height="684" alt="diagram" src="https://github.com/user-attachments/assets/892afe74-8849-4e06-84c7-6e2f53f81679" />
 
 ## 📂 Project Structure
 
-The repository is organized into three main components:
+The repository consists of three core components:
 
-* `/backend`: The main chatbot API and logic (e.g., FastAPI, WebSocket handling).
-* `/frontend`: The web-based user interface (e.g., React, Vue, Svelte).
-* `/excel_mcp`: The "MCP server" dedicated to CSV data processing.
+* `/backend`: Main chatbot API and orchestration logic (FastAPI, WebSocket handling).
+* `/frontend`: Web-based user interface (React).
+* `/excel_mcp`: “MCP server” for data analysis and interaction with CSV files.
 
 ## 📋 Prerequisites
 
-Before you begin, ensure you have the following installed:
+Before running the project locally, ensure that the following tools are installed:
+
 * [Node.js](https://nodejs.org/) (LTS version recommended)
 * [pnpm](https://pnpm.io/installation) (Package manager for the frontend)
-* [uv](https://github.com/astral-sh/uv) (A fast Python package installer and runner)
-
-## 🚀 How to Run Locally
-
-To run the full application, you will need to open **three separate terminal windows** (or tabs), one for each service.
+* [uv](https://github.com/astral-sh/uv) (Fast Python package installer and runner)
+* [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) (for containerized deployment)
 
 ---
 
-### 1. Run the Backend
+## 🚀 How to Run Locally (Manual Setup)
 
-In your **first** terminal, run the main backend server:
+If you prefer to run each service manually, use **three separate terminal windows** (or tabs).
+
+### 1. Backend
 
 ```bash
-# 1. Navigate to the backend directory
+# Navigate to backend directory
 cd backend
 
-# 2. Run the main application using uv
-# (This assumes 'uv' is configured to find and install dependencies
-# defined in your pyproject.toml or requirements.txt)
+# Run the backend server
 uv run main.py
 ```
-*Your backend server should now be running.*
 
------
+Your backend server should now be running.
 
-### 2\. Run the Frontend
+---
 
-In your **second** terminal, run the web interface:
+### 2. Frontend
 
 ```bash
-# 1. Navigate to the frontend directory
+# Navigate to frontend directory
 cd frontend
 
-# 2. Install all necessary dependencies
+# Install dependencies
 pnpm install
 
-# 3. Build the application for production
+# Build and start the application
 pnpm build
-
-# 4. Start the production server
 pnpm start
 ```
 
-*Your frontend application should now be accessible in your browser (e.g., at `http://localhost:3000`).*
+The frontend will be available at [http://localhost:3000](http://localhost:3000).
 
------
+---
 
-### 3\. Run the Excel MCP Server 
-
-In your **third** terminal, run the dedicated Excel MCP server:
+### 3. Excel MCP Server
 
 ```bash
-# 1. Navigate to the MCP server's directory
+# Navigate to the MCP server directory
 cd excel_mcp/mcp_excel_server
 
-# 2. Run the server application using uv
+# Start the MCP server
 uv run server.py
 ```
 
-*Your MCP server is now running and ready to handle requests from the backend.*
+The MCP server will now be ready to handle backend requests.
 
------
+---
+
+## 🐳 Run with Docker Compose (Recommended)
+
+You can run all services together using **Docker Compose**, which automatically builds and connects the containers in a shared network.
+
+```bash
+# Build and start all services
+docker compose up --build
+```
+
+This command will start:
+
+* **frontend**: accessible at [http://localhost:3000](http://localhost:3000)
+* **backend**: internal service handling chat logic
+* **excel_mcp**: dedicated server for Excel data processing
+
+To stop all containers, use:
+
+```bash
+docker compose down
+```
+
+If you modify source code and need to rebuild, run:
+
+```bash
+docker compose up --build
+```
+
+
+## 🧩 Environment Configuration
+
+The project uses a `.env` file located in the root directory.
+Currently, it only requires one variable:
+
+```
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+Docker Compose automatically loads this file and shares the variable with all containers.
+Ensure the key is valid before starting the services.
+
+---
