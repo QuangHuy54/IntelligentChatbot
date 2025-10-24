@@ -1,12 +1,17 @@
 # AI Chatbot Project
 
 This is a multi-component chatbot application that supports advanced features, including multimodal chat with images and data analysis by querying CSV files via a dedicated MCP server.
+
 Demo: https://youtu.be/uV_kBuPEWGk
+
 ## ✨ Features
 
 * **Image Chat:** Engage in conversations about images.
 * **CSV Data Chat:** Ask questions and analyze data from CSV files.
 * **Modular Architecture:** The project is separated into a `frontend`, `backend`, and a dedicated `excel_mcp` server for data processing.
+
+## 🏗️ System Overview
+<img width="1386" height="684" alt="diagram" src="https://github.com/user-attachments/assets/892afe74-8849-4e06-84c7-6e2f53f81679" />
 
 ## 📂 Project Structure
 
@@ -68,9 +73,9 @@ pnpm start
 
 -----
 
-### 3\. Run the MCP Server (for CSV Chat)
+### 3\. Run the Excel MCP Server 
 
-In your **third** terminal, run the dedicated CSV data processing server:
+In your **third** terminal, run the dedicated Excel MCP server:
 
 ```bash
 # 1. Navigate to the MCP server's directory
@@ -80,6 +85,6 @@ cd excel_mcp/mcp_excel_server
 uv run server.py
 ```
 
-*Your MCP data server is now running and ready to handle requests from the backend.*
+*Your MCP server is now running and ready to handle requests from the backend.*
 
 -----
