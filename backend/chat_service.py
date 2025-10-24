@@ -1,10 +1,10 @@
 import json
 import mimetypes
 from typing import List
-
+from config import SYSTEM_PROMPT
 from langchain.agents import create_agent
 from langchain.agents.middleware import wrap_tool_call
-from langchain_core.messages import ToolMessage
+from langchain_core.messages import ToolMessage,SystemMessage
 from langchain_core.messages.base import BaseMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 
@@ -41,7 +41,7 @@ async def stream_langchain_response(messages: List[BaseMessage]):
 
         agent = create_agent(llm, tools, middleware=[handle_tool_errors])
         
-        async for chunk, metadata in agent.astream({"messages": messages}, stream_mode="messages"):
+        async for chunk, metadata in agent.astream({"messages": [SystemMessage(SYSTEM_PROMPT)]+messages}, stream_mode="messages"):
             if hasattr(chunk,"artifact") and chunk.artifact!=None:
                 save_image_from_artifact(
                     chunk.artifact[0],

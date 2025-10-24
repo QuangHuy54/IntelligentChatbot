@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "aiofiles>=25.1.0",
     "assistant-stream[langgraph]>=0.0.30",
     "bson>=0.5.10",
     "fastapi[standard]>=0.119.1",

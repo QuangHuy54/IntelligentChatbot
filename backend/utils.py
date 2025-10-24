@@ -103,7 +103,7 @@ def convert_to_langchain_messages(messages: List[Dict[str, Any]]) -> List[BaseMe
                             # Data is already base64
                             mime_type = "image/jpeg" # Add your logic to guess mime type
                             data_uri = f"data:{mime_type};base64,{image_data}"
-                            message_content.append({"type": "image_url", "image_url": {"url": data_uri}})
+                            message_content.append({"type": "image", "source_type": "base64", "data": image_data,"mime_type":mime_type})
 
         # 3. Create the final LangChain message
         if message_content:

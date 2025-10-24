@@ -4,7 +4,7 @@ import pandas as pd
 from PIL import Image
 from fastapi import APIRouter, Request, UploadFile, File
 from fastapi.responses import StreamingResponse
-
+import aiofiles
 # Import components from our other files
 from config import UPLOAD_DIR
 from schemas import ChatRequest
@@ -19,8 +19,8 @@ async def upload_file(file: UploadFile = File(...)):
     path = os.path.join(UPLOAD_DIR, file.filename)
 
     # Save file to local folder
-    with open(path, "wb") as f:
-        f.write(await file.read())
+    async with aiofiles.open(path, "wb") as f:
+        await f.write(await file.read())
 
     # Build accessible URL
     file_url = f"http://localhost:8000/uploads/{file.filename}"
